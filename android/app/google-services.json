@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "334747971586",
+    "firebase_url": "https://myhighst-20471.firebaseio.com",
+    "project_id": "myhighst-20471",
+    "storage_bucket": "myhighst-20471.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334747971586:android:a775d9d44b2a774317371b",
+        "android_client_info": {
+          "package_name": "com.example.myhighst_map_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "334747971586-6lglf3b7bj3e1bvb9lnsvgbaeqk40de1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOp6DOozu_-QF3vMc2xEiBh2_rtTpy3PI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "334747971586-6lglf3b7bj3e1bvb9lnsvgbaeqk40de1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "334747971586-guj07f4fbm2n7ngv97fvfbvagbph6p1n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myhighstMapApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
