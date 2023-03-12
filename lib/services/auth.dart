@@ -11,10 +11,34 @@ class Auth {
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      String? errorMessage;
+
+      switch (e.code) {
+        case "firebase_auth/invalid-email":
+        case "wrong-password":
+        case "user-not-found":
+          {
+            errorMessage = "Wrong email address or password.";
+            break;
+          }
+        case "auth/user-disabled":
+        case "user-disabled":
+          {
+            errorMessage = "This account is disabled";
+            break;
+          }
+      }
+
+      if (errorMessage != null) {
+        throw errorMessage;
+      }
+    }
   }
 
   Future<void> createUserWithEmailAndPassword({

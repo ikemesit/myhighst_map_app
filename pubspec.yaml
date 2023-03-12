@@ -44,6 +44,9 @@ dependencies:
   json_theme: ^4.0.3+2
   google_maps_flutter: ^2.2.4
   cool_alert: ^2.0.1
+  getwidget: ^2.0.4
+  image_picker: ^0.8.7
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

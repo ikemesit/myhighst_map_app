@@ -3,8 +3,9 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:myhighst_map_app/custom_widgets/app_filled_button.dart';
 
-import '../auth.dart';
+import '../services/auth.dart';
 import 'bottom_bar.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -16,9 +17,11 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   String? errorMessage = "";
-  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerFirstName = TextEditingController();
+  final TextEditingController _controllerLastName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerCPassword = TextEditingController();
 
   @override
   void initState() {
@@ -35,7 +38,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       final data = {
-        "name": _controllerName.text,
+        "firstName": _controllerFirstName.text,
+        'lastName': _controllerLastName.text,
         "email": _controllerEmail.text
       };
 
@@ -49,14 +53,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    onSignUpEventHandler() {
+      _createUserWithEmailAndPassword();
+
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.success,
+        text: "Sign up was successful!",
+      );
+
+      Future.delayed(
+        const Duration(seconds: 2),
+        () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const BottomBar(),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(251, 245, 243, 1),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.amber,
+      appBar: AppBar(
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            );
+          },
+        ),
+        backgroundColor: Colors.transparent,
+      ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Center(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   //     fontSize: 35,
                   //   ),
                   // ),
-                  const Gap(100),
+                  // const Gap(100),
                   const Text(
                     'Sign Up',
                     style: TextStyle(
@@ -91,14 +128,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                     child: TextField(
-                      controller: _controllerName,
+                      controller: _controllerFirstName,
                       decoration: const InputDecoration(
                           icon: Icon(Icons.person_2),
                           filled: true,
                           fillColor: Colors.white,
                           enabledBorder: InputBorder.none,
                           border: OutlineInputBorder(),
-                          hintText: "Your name",
+                          hintText: "Your first name",
+                          focusedBorder: InputBorder.none,
+                          focusColor: Colors.transparent),
+                    ),
+                  ),
+                  const Gap(30),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    child: TextField(
+                      controller: _controllerLastName,
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.person_2),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: InputBorder.none,
+                          border: OutlineInputBorder(),
+                          hintText: "Your last name",
                           focusedBorder: InputBorder.none,
                           focusColor: Colors.transparent),
                     ),
@@ -128,7 +186,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Container(
                     padding:
                         const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -148,40 +205,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const Gap(30),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
+                    // margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    child: TextField(
+                      controller: _controllerCPassword,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.password),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: InputBorder.none,
+                          border: OutlineInputBorder(),
+                          hintText: "Confirm Password",
+                          focusedBorder: InputBorder.none,
+                          focusColor: Colors.transparent),
+                    ),
+                  ),
+                  const Gap(40),
                   ConstrainedBox(
                     constraints: const BoxConstraints(
                       minWidth: double.infinity,
                       maxWidth: double.infinity,
                     ),
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        fixedSize: const Size(320, 50),
-                        backgroundColor: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: () {
-                        _createUserWithEmailAndPassword();
-
-                        CoolAlert.show(
-                          context: context,
-                          type: CoolAlertType.success,
-                          text: "Sign up was successful!",
-                        );
-
-                        Future.delayed(
-                            const Duration(seconds: 2),
-                            () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const BottomBar(),
-                                  ),
-                                ));
-                      },
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
+                    child: AppFilledButton(
+                      label: 'Sign Up',
+                      submitEventCallback: () => onSignUpEventHandler,
+                      icon: const Icon(
+                        Icons.app_registration,
+                        color: Colors.white,
                       ),
                     ),
                   ),

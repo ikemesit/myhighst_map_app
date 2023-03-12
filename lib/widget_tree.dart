@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:myhighst_map_app/auth.dart';
 import 'package:myhighst_map_app/screens/bottom_bar.dart';
 import 'package:myhighst_map_app/screens/login_screen.dart';
+import 'package:myhighst_map_app/services/auth.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({Key? key}) : super(key: key);

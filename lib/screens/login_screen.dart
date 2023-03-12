@@ -1,9 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:getwidget/colors/gf_color.dart';
+import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/position/gf_toast_position.dart';
+import 'package:myhighst_map_app/custom_widgets/app_filled_button.dart';
 import 'package:myhighst_map_app/screens/sign_up.dart';
 
-import '../auth.dart';
+import '../services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,42 +16,67 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   String? errorMessage = "";
+  bool _submitted = false;
+
+  String _email = '';
+  String _password = '';
+
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
   @override
   void initState() {
-    _controllerEmail.text = "";
-    _controllerPassword.text = "";
+    // _controllerEmail.text = "";
+    // _controllerPassword.text = "";
     super.initState();
-  }
-
-  Future<void> _signInWithEmailAndPassword() async {
-    try {
-      await Auth().signInWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    signInWithEmailAndPassword() async {
+      setState(() => _submitted = true);
+
+      if (_formKey.currentState!.validate()) {
+        try {
+          await Auth().signInWithEmailAndPassword(
+            email: _email,
+            password: _password,
+          );
+        } catch (e) {
+          setState(() {
+            errorMessage = e.toString();
+
+            GFToast.showToast(errorMessage, context,
+                toastDuration: 4,
+                toastPosition: GFToastPosition.BOTTOM,
+                textStyle: const TextStyle(fontSize: 12, color: GFColors.WHITE),
+                backgroundColor: GFColors.DARK,
+                toastBorderRadius: 8.0,
+                trailing: const Icon(
+                  Icons.error,
+                  color: GFColors.DANGER,
+                ));
+          });
+        }
+      }
+    }
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.amber,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Center(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -65,70 +93,81 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const Gap(50),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: TextField(
-                      controller: _controllerEmail,
-                      decoration: const InputDecoration(
-                          icon: Icon(Icons.email),
-                          filled: true,
-                          fillColor: Colors.white,
-                          enabledBorder: InputBorder.none,
-                          border: OutlineInputBorder(),
-                          hintText: "Email",
-                          focusedBorder: InputBorder.none,
-                          focusColor: Colors.transparent),
-                    ),
-                  ),
-                  const Gap(20),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: TextField(
-                      controller: _controllerPassword,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                          icon: Icon(Icons.password),
-                          filled: true,
-                          fillColor: Colors.white,
-                          enabledBorder: InputBorder.none,
-                          border: OutlineInputBorder(),
-                          hintText: "Password",
-                          focusedBorder: InputBorder.none,
-                          focusColor: Colors.transparent),
-                    ),
-                  ),
-                  const Gap(30),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: double.infinity,
-                      maxWidth: double.infinity,
-                    ),
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        fixedSize: const Size(320, 50),
-                        backgroundColor: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: _signInWithEmailAndPassword,
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            return null;
+                          },
+                          autovalidateMode: _submitted
+                              ? AutovalidateMode.onUserInteraction
+                              : AutovalidateMode.disabled,
+                          decoration: const InputDecoration(
+                            // icon: Icon(Icons.email),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
+                            hintText: "Email",
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
+                            focusColor: Colors.transparent,
+                          ),
+                          onChanged: (value) => setState(() => _email = value),
                         ),
-                      ),
+                        const Gap(20),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                              // icon: Icon(Icons.password),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                              ),
+                              hintText: "Password",
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                              ),
+                              focusColor: Colors.transparent),
+                          onChanged: (value) =>
+                              setState(() => _password = value),
+                        ),
+                        const Gap(30),
+                        ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: double.infinity,
+                              maxWidth: double.infinity,
+                            ),
+                            child: AppFilledButton(
+                              label: 'Sign In',
+                              submitEventCallback: () =>
+                                  signInWithEmailAndPassword,
+                              icon: const Icon(
+                                Icons.login,
+                                color: Colors.white,
+                              ),
+                            )),
+                      ],
                     ),
                   ),
                   const Gap(20),
