@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:json_theme/json_theme.dart';
-import 'package:myhighst_map_app/widget_tree.dart';
+import 'package:myhighst_map_app/screens/bottom_bar.dart';
 
 import 'firebase_options.dart';
 
@@ -18,9 +19,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp(
-    theme: theme,
-  ));
+  runApp(
+    ProviderScope(
+      child: MyApp(
+        theme: theme,
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -35,7 +40,7 @@ class MyApp extends StatelessWidget {
       title: 'MyHighSt Map',
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: const WidgetTree(),
+      home: const BottomBar(), //WidgetTree(),
     );
   }
 }

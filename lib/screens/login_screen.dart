@@ -23,13 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String _email = '';
   String _password = '';
 
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
-
   @override
   void initState() {
-    // _controllerEmail.text = "";
-    // _controllerPassword.text = "";
     super.initState();
   }
 
@@ -66,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.amber,
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
@@ -80,13 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  const Image(
-                    height: 90,
-                    image: AssetImage('assets/images/distance.png'),
-                  ),
                   const Gap(10),
                   const Text(
-                    'myhighst map',
+                    'You need to be signed in to view this page',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 35,

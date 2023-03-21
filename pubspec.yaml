@@ -47,6 +47,11 @@ dependencies:
   getwidget: ^2.0.4
   image_picker: ^0.8.7
   path: ^1.8.3
+  flutter_native_splash: ^2.2.19
+  hooks_riverpod: ^2.3.2
+  flutter_polyline_points: ^1.0.0
+  location: ^4.4.0
+  flutter_svg: ^2.0.4
 
 dev_dependencies:
   flutter_test:

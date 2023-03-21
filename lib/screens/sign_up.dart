@@ -38,12 +38,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       final data = {
-        "firstName": _controllerFirstName.text,
+        'firstName': _controllerFirstName.text,
         'lastName': _controllerLastName.text,
-        "email": _controllerEmail.text
+        'fullName': '${_controllerFirstName.text} ${_controllerLastName.text}',
+        'email': _controllerEmail.text,
+        'dateRegistered': Timestamp.now(),
+        'uid': Auth().currentUser?.uid
       };
 
       await FirebaseFirestore.instance.collection('users').add(data);
+      await Auth().currentUser?.updateDisplayName(_controllerFirstName.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -64,7 +68,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       Future.delayed(
         const Duration(seconds: 2),
-        () => Navigator.of(context).push(
+        () => Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const BottomBar(),
           ),
@@ -99,19 +103,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  // const Image(
-                  //   height: 90,
-                  //   image: AssetImage('assets/images/distance.png'),
-                  // ),
-                  // const Gap(10),
-                  // const Text(
-                  //   'myhighst map',
-                  //   style: TextStyle(
-                  //     fontWeight: FontWeight.bold,
-                  //     fontSize: 35,
-                  //   ),
-                  // ),
-                  // const Gap(100),
                   const Text(
                     'Sign Up',
                     style: TextStyle(
