@@ -50,8 +50,8 @@ dependencies:
   flutter_native_splash: ^2.2.19
   hooks_riverpod: ^2.3.2
   flutter_polyline_points: ^1.0.0
-  location: ^4.4.0
   flutter_svg: ^2.0.4
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

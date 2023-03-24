@@ -3,7 +3,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:myhighst_map_app/custom_widgets/app_filled_button.dart';
+import 'package:myhighst_map_app/widgets/app_filled_button.dart';
 
 import '../services/auth.dart';
 import 'bottom_bar.dart';

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:json_theme/json_theme.dart';
-import 'package:myhighst_map_app/screens/bottom_bar.dart';
+import 'package:myhighst_map_app/screens/home_screen.dart';
 
 import 'firebase_options.dart';
 
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       title: 'MyHighSt Map',
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: const BottomBar(), //WidgetTree(),
+      home: HomeScreen(), //WidgetTree(),
     );
   }
 }

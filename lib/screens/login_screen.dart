@@ -3,8 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:getwidget/position/gf_toast_position.dart';
-import 'package:myhighst_map_app/custom_widgets/app_filled_button.dart';
 import 'package:myhighst_map_app/screens/sign_up.dart';
+import 'package:myhighst_map_app/widgets/app_filled_button.dart';
 
 import '../services/auth.dart';
 
