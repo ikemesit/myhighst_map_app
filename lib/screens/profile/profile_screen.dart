@@ -8,8 +8,8 @@ import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
-import '../services/auth.dart';
-import 'login_screen.dart';
+import '../../services/auth/auth.dart';
+import '../login/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

@@ -3,10 +3,11 @@ import 'package:gap/gap.dart';
 import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:getwidget/position/gf_toast_position.dart';
-import 'package:myhighst_map_app/screens/sign_up.dart';
+import 'package:myhighst_map_app/screens/profile/profile_page.dart';
+import 'package:myhighst_map_app/screens/signup/signup_screen.dart';
 import 'package:myhighst_map_app/widgets/app_filled_button.dart';
 
-import '../services/auth.dart';
+import '../../services/auth/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -30,15 +31,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    signInWithEmailAndPassword() async {
+    signInWithEmailAndPassword() {
       setState(() => _submitted = true);
 
       if (_formKey.currentState!.validate()) {
         try {
-          await Auth().signInWithEmailAndPassword(
+          Auth()
+              .signInWithEmailAndPassword(
             email: _email,
             password: _password,
-          );
+          )
+              .then((value) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfilePage(),
+              ),
+            );
+          });
         } catch (e) {
           setState(() {
             errorMessage = e.toString();
@@ -72,19 +82,21 @@ class _LoginScreenState extends State<LoginScreen> {
               padding:
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  const Gap(10),
-                  const Text(
-                    'You need to be signed in to view this page',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                      ),
                     ),
                   ),
-                  const Gap(50),
+                  const Gap(20),
                   Form(
                     key: _formKey,
                     child: Column(
@@ -111,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             hintText: "Email",
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(),
+                              borderSide: BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.all(
                                 Radius.circular(8.0),
                               ),

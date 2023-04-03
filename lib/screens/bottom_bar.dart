@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:myhighst_map_app/screens/profile-page.dart';
+import 'package:myhighst_map_app/screens/profile/profile_page.dart';
 
-import 'home_screen.dart';
+import 'home/home_screen.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({Key? key}) : super(key: key);

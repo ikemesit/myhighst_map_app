@@ -52,6 +52,7 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   flutter_svg: ^2.0.4
   sliding_up_panel: ^2.0.0+1
+  url_launcher: ^6.1.10
 
 dev_dependencies:
   flutter_test:

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myhighst_map_app/services/auth.dart';
+import 'package:myhighst_map_app/services/auth/auth.dart';
+
+import '../home/home_screen.dart';
 
 class ProfilePage extends ConsumerWidget {
   ProfilePage({
@@ -92,7 +94,10 @@ class ProfilePage extends ConsumerWidget {
     final user = ref.watch(authStateProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My profile'),
+        title: const Text(
+          'My profile',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         automaticallyImplyLeading: true,
         centerTitle: true,
       ),
@@ -111,25 +116,31 @@ class ProfilePage extends ConsumerWidget {
                             Center(
                               child: CircleAvatar(
                                 radius: 55,
-                                backgroundColor: Colors.amber,
+                                backgroundColor: Colors.grey,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50),
-                                  child: val?.photoURL != null
+                                  child: val.photoURL != null
                                       ? Image.network(
                                           val.photoURL!,
                                           width: 100,
                                           height: 100,
                                           fit: BoxFit.fitWidth,
                                         )
-                                      : const Icon(Icons.person),
+                                      : const Icon(
+                                          Icons.person,
+                                          size: 100,
+                                          color: Colors.white,
+                                        ),
                                 ),
                               ),
                             ),
-                            const Gap(20),
+                            const Gap(10),
                             Text(
-                              'Test',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              val.displayName!,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             )
                           ],
                         )
@@ -270,6 +281,12 @@ class ProfilePage extends ConsumerWidget {
                     child: GestureDetector(
                       onTap: () {
                         Auth().signOut();
+                        Navigator.pop(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
                       },
                       child: Container(
                         width: double.infinity,

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:myhighst_map_app/widgets/app_filled_button.dart';
 
-import '../services/auth.dart';
-import 'bottom_bar.dart';
+import '../../services/auth/auth.dart';
+import '../bottom_bar.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
