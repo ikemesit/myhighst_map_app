@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:myhighst_map_app/screens/profile/profile_page.dart';
 
 import 'home/home_screen.dart';
 
@@ -26,7 +25,7 @@ class _BottomBarState extends State<BottomBar> {
     HomeScreen(),
     const Text('Search'),
     const Text('Tickets'),
-    ProfilePage(),
+    // ProfilePage(),
   ];
 
   void _onItemTapped(int index) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:myhighst_map_app/global_states.dart';
 
-class AppFilledButton extends StatefulWidget {
+class AppFilledButton extends ConsumerWidget {
   final Function submitEventCallback;
 
   final String label;
@@ -14,28 +16,14 @@ class AppFilledButton extends StatefulWidget {
     required this.icon,
   }) : super(key: key);
 
-  @override
-  State<AppFilledButton> createState() => _AppFilledButtonState();
-}
-
-class _AppFilledButtonState extends State<AppFilledButton> {
-  var _isLoading = false;
-
   void _onSubmit() {
-    Function callbackEvt = widget.submitEventCallback();
-
+    Function callbackEvt = submitEventCallback();
     callbackEvt();
-
-    setState(() => _isLoading = true);
-
-    Future.delayed(
-      const Duration(seconds: 2),
-      () => setState(() => _isLoading = false),
-    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(appFilledButtonLoadingStateProvider);
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).primaryColor,
@@ -44,14 +32,14 @@ class _AppFilledButtonState extends State<AppFilledButton> {
       ),
       onPressed: _onSubmit,
       label: Text(
-        widget.label,
+        label,
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
       ),
-      icon: _isLoading
+      icon: isLoading == true
           ? Container(
               width: 24,
               height: 24,
@@ -61,7 +49,7 @@ class _AppFilledButtonState extends State<AppFilledButton> {
                 strokeWidth: 3,
               ),
             )
-          : widget.icon,
+          : icon,
     );
   }
 }

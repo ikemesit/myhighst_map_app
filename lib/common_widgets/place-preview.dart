@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:myhighst_map_app/screens/place_detail/place_detail.dart';
 
-class ListingPreview extends StatelessWidget {
-  const ListingPreview({Key? key, required this.tempTag}) : super(key: key);
+import '../features/place/place.dart';
+
+class PlacePreview extends StatelessWidget {
+  const PlacePreview({Key? key, required this.tempTag}) : super(key: key);
 
   final String tempTag;
 
@@ -23,7 +24,7 @@ class ListingPreview extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PlaceDetail(),
+                builder: (context) => Place(),
               ),
             );
           },

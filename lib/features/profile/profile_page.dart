@@ -1,112 +1,48 @@
-import 'dart:io';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:myhighst_map_app/services/auth/auth.dart';
+import 'package:myhighst_map_app/features/authentication/data/auth.dart';
+import 'package:myhighst_map_app/features/profile/profile_edit.dart';
+import 'package:myhighst_map_app/services/auth/user.service.dart';
 
-import '../home/home_screen.dart';
+import '../../models/user.model.dart' as model;
+import '../../screens/home/home_screen.dart';
 
 class ProfilePage extends ConsumerWidget {
-  ProfilePage({
+  const ProfilePage({
     Key? key,
+    required this.authUser,
   }) : super(key: key);
 
-  File? _photo;
-
-  // final imagePickerProvider = FutureProvider<XFile?>((ref) => null);
-
-  final ImagePicker _picker = ImagePicker();
-
-  // Future imgFromGallery() async {
-  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  //
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       _photo = File(pickedFile.path);
-  //       uploadFile();
-  //     } else {
-  //       print('No image selected.');
-  //     }
-  //   });
-  // }
-  //
-  // Future imgFromCamera() async {
-  //   final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-  //
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       _photo = File(pickedFile.path);
-  //       uploadFile();
-  //     } else {
-  //       print('No image selected.');
-  //     }
-  //   });
-  // }
-  //
-  // Future uploadFile() async {
-  //   if (_photo == null) return;
-  //   final fileName = basename(_photo!.path);
-  //   const destination = 'profilePics/';
-  //
-  //   try {
-  //     final ref = FirebaseStorage.instance.ref(destination).child(fileName);
-  //     final uploadTask = await ref.putFile(_photo!);
-  //   } catch (e) {
-  //     print('error occured');
-  //   }
-  // }
-
-  // void _showPicker(context) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       builder: (BuildContext bc) {
-  //         return SafeArea(
-  //           child: Wrap(
-  //             children: <Widget>[
-  //               const SizedBox(
-  //                 height: 40,
-  //               ),
-  //               ListTile(
-  //                   leading: const Icon(Icons.photo_library),
-  //                   title: const Text('Gallery'),
-  //                   onTap: () {
-  //                     imgFromGallery();
-  //                     Navigator.of(context).pop();
-  //                   }),
-  //               ListTile(
-  //                 leading: const Icon(Icons.photo_camera),
-  //                 title: const Text('Camera'),
-  //                 onTap: () {
-  //                   imgFromCamera();
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         );
-  //       });
-  // }
+  final User authUser;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authStateProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My profile',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        automaticallyImplyLeading: true,
-        centerTitle: true,
-      ),
-      body: user.when(
-        data: (val) => val != null
-            ? Column(
+    final auth = ref.read(authProvider);
+    final Future<model.User?> userQuery =
+        ref.watch(userServiceProvider).getUserById(authUser.uid);
+
+    return FutureBuilder(
+        future: userQuery,
+        builder: (context, snapshot) {
+          if (snapshot.hasData == true) {
+            final user = snapshot.data as model.User;
+
+            return Scaffold(
+              backgroundColor: Colors.blueGrey[50],
+              appBar: AppBar(
+                title: const Text(
+                  'My profile',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                automaticallyImplyLeading: true,
+                centerTitle: true,
+              ),
+              body: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,9 +55,9 @@ class ProfilePage extends ConsumerWidget {
                                 backgroundColor: Colors.grey,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50),
-                                  child: val.photoURL != null
+                                  child: user.photoUrl!.isNotEmpty
                                       ? Image.network(
-                                          val.photoURL!,
+                                          user.photoUrl as String,
                                           width: 100,
                                           height: 100,
                                           fit: BoxFit.fitWidth,
@@ -136,7 +72,7 @@ class ProfilePage extends ConsumerWidget {
                             ),
                             const Gap(10),
                             Text(
-                              val.displayName!,
+                              snapshot.data?.fullName ?? '',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -213,6 +149,11 @@ class ProfilePage extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(
                         vertical: 2, horizontal: 8.0),
                     child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfileEdit()),
+                      ),
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
@@ -280,7 +221,7 @@ class ProfilePage extends ConsumerWidget {
                         vertical: 2, horizontal: 8.0),
                     child: GestureDetector(
                       onTap: () {
-                        Auth().signOut();
+                        auth.signOut();
                         Navigator.pop(
                           context,
                           MaterialPageRoute(
@@ -317,15 +258,27 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   ),
                 ],
-              )
-            : null,
-        error: (_, __) => const Center(
-          child: Text('An error occured!'),
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
+              ),
+            );
+          } else if (snapshot.hasError == true) {
+            return const Placeholder();
+          } else {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Profile Edit'),
+              ),
+              body: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+            );
+          }
+        });
   }
 }

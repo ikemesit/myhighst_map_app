@@ -3,19 +3,20 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:myhighst_map_app/widgets/app_filled_button.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:myhighst_map_app/common_widgets/app_filled_button.dart';
+import 'package:myhighst_map_app/screens/home/home_screen.dart';
 
-import '../../services/auth/auth.dart';
-import '../bottom_bar.dart';
+import '../../data/auth.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   String? errorMessage = "";
   final TextEditingController _controllerFirstName = TextEditingController();
   final TextEditingController _controllerLastName = TextEditingController();
@@ -31,8 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _createUserWithEmailAndPassword() async {
+    final auth = ref.read(authProvider);
     try {
-      await Auth().createUserWithEmailAndPassword(
+      await auth.createUserWithEmailAndPassword(
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
@@ -42,12 +44,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'lastName': _controllerLastName.text,
         'fullName': '${_controllerFirstName.text} ${_controllerLastName.text}',
         'email': _controllerEmail.text,
-        'dateRegistered': Timestamp.now(),
-        'uid': Auth().currentUser?.uid
+        'createdAt': Timestamp.now(),
+        'uid': auth.currentUser?.uid,
+        'photoUrl': null,
       };
 
-      await FirebaseFirestore.instance.collection('users').add(data);
-      await Auth().currentUser?.updateDisplayName(_controllerFirstName.text);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(data['uid'] as String?)
+          .set(data);
+
+      await auth.currentUser?.updateDisplayName(_controllerFirstName.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -57,6 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = ref.read(authProvider);
     onSignUpEventHandler() {
       _createUserWithEmailAndPassword();
 
@@ -64,14 +72,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         context: context,
         type: CoolAlertType.success,
         text: "Sign up was successful!",
-      );
-
-      Future.delayed(
-        const Duration(seconds: 2),
-        () => Navigator.of(context).pushReplacement(
+      ).then(
+        (value) => Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => const BottomBar(),
+            builder: (context) => HomeScreen(),
           ),
+          (route) => false,
         ),
       );
     }

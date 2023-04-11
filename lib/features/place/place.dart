@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PlaceDetail extends StatelessWidget {
-  PlaceDetail({Key? key}) : super(key: key);
+class Place extends StatelessWidget {
+  Place({Key? key}) : super(key: key);
 
   final Uri _url = Uri.parse('https://www.google.com/maps/dir/KLIA+(KUL),'
       '+Kuala+Lumpur+International+Airport,+Sepang,+Selangor,'

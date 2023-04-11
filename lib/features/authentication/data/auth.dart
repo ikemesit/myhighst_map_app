@@ -2,10 +2,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final authStateProvider =
-    StreamProvider<User?>((ref) => Auth().authStateChanges);
+    StreamProvider<User?>((ref) => ref.watch(authProvider).authStateChanges);
 
-class Auth {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+final authProvider =
+    Provider<AuthRepository>((ref) => AuthRepository(FirebaseAuth.instance));
+
+final authStateNotifierProvider =
+    StateNotifierProvider<AuthStateNotifier, User?>((ref) {
+  final user = ref.watch(authStateProvider);
+
+  return user.when(
+    data: (user) => AuthStateNotifier(user),
+    loading: () => AuthStateNotifier(null),
+    error: (error, stack) => AuthStateNotifier(null),
+  );
+});
+
+class AuthStateNotifier extends StateNotifier<User?> {
+  final User? user;
+
+  AuthStateNotifier(this.user) : super(null) {
+    _init();
+    print('from auth state notifier: $user');
+  }
+
+  Future<void> _init() async {
+    state = user;
+  }
+}
+
+class AuthRepository {
+  AuthRepository(this._firebaseAuth);
+
+  final FirebaseAuth _firebaseAuth;
 
   User? get currentUser => _firebaseAuth.currentUser;
 

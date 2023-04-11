@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:myhighst_map_app/common_widgets/place-preview.dart';
 import 'package:myhighst_map_app/screens/home/home_screen.provider.dart';
-import 'package:myhighst_map_app/widgets/listing-preview.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../app_constants.dart';
-import '../../services/auth/auth.dart';
-import '../login/login_screen.dart';
-import '../profile/profile_page.dart';
+import '../../features/authentication/data/auth.dart';
+import '../../features/authentication/presentation/login/login_screen.dart';
+import '../../features/profile/profile_page.dart';
 
 class HomeScreen extends ConsumerWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -28,7 +28,7 @@ class HomeScreen extends ConsumerWidget {
     final slideUpPanelStatus = ref.watch(slideUpStateProvider);
     final showDestinationSearchPanel =
         ref.watch(showDestinationSearchPanelProvider);
-    final user = ref.read(authStateProvider).asData?.value;
+    final user = ref.watch(authStateNotifierProvider);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -136,10 +136,10 @@ class HomeScreen extends ConsumerWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            ListingPreview(tempTag: 'tag1'),
-                            ListingPreview(tempTag: 'tag2'),
-                            ListingPreview(tempTag: 'tag3'),
-                            ListingPreview(tempTag: 'tag4'),
+                            const PlacePreview(tempTag: 'tag1'),
+                            const PlacePreview(tempTag: 'tag2'),
+                            const PlacePreview(tempTag: 'tag3'),
+                            const PlacePreview(tempTag: 'tag4'),
                             Card(
                               color: Colors.white,
                               surfaceTintColor: Colors.white,
@@ -210,18 +210,19 @@ class HomeScreen extends ConsumerWidget {
                               clipBehavior: Clip.hardEdge,
                               child: InkWell(
                                 onTap: () {
+                                  print('from home screen: $user');
                                   if (user != null) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => ProfilePage()),
+                                          builder: (context) =>
+                                              ProfilePage(authUser: user)),
                                     );
                                   } else {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginScreen()),
+                                          builder: (context) => LoginScreen()),
                                     );
                                   }
                                 },

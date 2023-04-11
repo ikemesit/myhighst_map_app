@@ -1,70 +1,73 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:getwidget/position/gf_toast_position.dart';
-import 'package:myhighst_map_app/screens/profile/profile_page.dart';
-import 'package:myhighst_map_app/screens/signup/signup_screen.dart';
-import 'package:myhighst_map_app/widgets/app_filled_button.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:myhighst_map_app/common_widgets/app_filled_button.dart';
+import 'package:myhighst_map_app/features/authentication/presentation/signup/signup_screen.dart';
+import 'package:myhighst_map_app/global_states.dart';
 
-import '../../services/auth/auth.dart';
+import '../../../profile/profile_page.dart';
+import '../../data/auth.dart';
+import 'login_screen.provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends ConsumerWidget {
+  LoginScreen({Key? key}) : super(key: key);
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? errorMessage = "";
-  bool _submitted = false;
-
-  String _email = '';
-  String _password = '';
 
   @override
-  void initState() {
-    super.initState();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final submitted = ref.watch(loginFormSubmittedProvider);
+    final auth = ref.read(authProvider);
 
-  @override
-  Widget build(BuildContext context) {
     signInWithEmailAndPassword() {
-      setState(() => _submitted = true);
+      ref.read(loginFormSubmittedProvider.notifier).state = true;
+      final buttonState =
+          ref.read(appFilledButtonLoadingStateProvider.notifier);
+
+      final email = ref.read(emailInputProvider.notifier).state;
+      final password = ref.read(passwordInputProvider.notifier).state;
+
+      // Toggle loading button
+      buttonState.toggleState();
 
       if (_formKey.currentState!.validate()) {
-        try {
-          Auth()
-              .signInWithEmailAndPassword(
-            email: _email,
-            password: _password,
-          )
-              .then((value) {
+        auth
+            .signInWithEmailAndPassword(
+          email: email!,
+          password: password!,
+        )
+            .then((value) {
+          buttonState.toggleState();
+
+          if (auth.currentUser != null) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ProfilePage(),
+                builder: (context) => ProfilePage(
+                  authUser: auth.currentUser as User,
+                ),
               ),
             );
-          });
-        } catch (e) {
-          setState(() {
-            errorMessage = e.toString();
+          }
+        }).catchError((error) {
+          buttonState.toggleState();
+          final errorMessage = error.toString();
 
-            GFToast.showToast(errorMessage, context,
-                toastDuration: 4,
-                toastPosition: GFToastPosition.BOTTOM,
-                textStyle: const TextStyle(fontSize: 12, color: GFColors.WHITE),
-                backgroundColor: GFColors.DARK,
-                toastBorderRadius: 8.0,
-                trailing: const Icon(
-                  Icons.error,
-                  color: GFColors.DANGER,
-                ));
-          });
-        }
+          GFToast.showToast(errorMessage, context,
+              toastDuration: 4,
+              toastPosition: GFToastPosition.BOTTOM,
+              textStyle: const TextStyle(fontSize: 12, color: GFColors.WHITE),
+              backgroundColor: GFColors.DARK,
+              toastBorderRadius: 8.0,
+              trailing: const Icon(
+                Icons.error,
+                color: GFColors.DANGER,
+              ));
+        });
       }
     }
 
@@ -108,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                             return null;
                           },
-                          autovalidateMode: _submitted
+                          autovalidateMode: submitted
                               ? AutovalidateMode.onUserInteraction
                               : AutovalidateMode.disabled,
                           decoration: const InputDecoration(
@@ -130,7 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             focusColor: Colors.transparent,
                           ),
-                          onChanged: (value) => setState(() => _email = value),
+                          onChanged: (value) => ref
+                              .read(emailInputProvider.notifier)
+                              .state = value,
                         ),
                         const Gap(20),
                         TextFormField(
@@ -153,8 +158,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               focusColor: Colors.transparent),
-                          onChanged: (value) =>
-                              setState(() => _password = value),
+                          onChanged: (value) => ref
+                              .read(passwordInputProvider.notifier)
+                              .state = value,
                         ),
                         const Gap(30),
                         ConstrainedBox(
