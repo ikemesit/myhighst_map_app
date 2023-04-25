@@ -44,10 +44,29 @@ dependencies:
   json_theme: ^4.0.3+2
   google_maps_flutter: ^2.2.4
   cool_alert: ^2.0.1
+  getwidget: ^2.0.4
+  image_picker: ^0.8.7
+  path: ^1.8.3
+  flutter_native_splash: ^2.2.19
+  hooks_riverpod: ^2.3.2
+  flutter_polyline_points: ^1.0.0
+  flutter_svg: ^2.0.4
+  sliding_up_panel: ^2.0.0+1
+  url_launcher: ^6.1.10
+  json_annotation: ^4.8.0
+  freezed_annotation: ^2.2.0
+  shared_preferences: ^2.1.0
+  riverpod_annotation: ^2.0.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  build_runner: ^2.3.3
+  json_serializable: ^6.6.1
+  riverpod_generator: ^2.1.6
+  riverpod_lint: ^1.2.0
+  custom_lint: ^0.3.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -55,6 +74,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  freezed: ^2.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
