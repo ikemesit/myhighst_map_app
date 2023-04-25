@@ -4,7 +4,7 @@
   "buttonTheme": {
     "alignedDropdown": false,
     "colorScheme": {
-      "background": "#fffffbff",
+      "background": "#ffffffff",
       "brightness": "light",
       "error": "#ffba1a1a",
       "errorContainer": "#ffffdad6",
@@ -78,16 +78,16 @@
     },
     "textTheme": "normal"
   },
-  "canvasColor": "#fffffbff",
-  "cardColor": "#fffffbff",
+  "canvasColor": "#ffffffff",
+  "cardColor": "#ffffffff",
   "colorScheme": {
-    "background": "#fffffbff",
+    "background": "#ffffffff",
     "brightness": "light",
     "error": "#ffba1a1a",
     "errorContainer": "#ffffdad6",
     "inversePrimary": "#ffffb4ab",
     "inverseSurface": "#ff362f2e",
-    "onBackground": "#ff201a19",
+    "onBackground": "#ffffffff",
     "onError": "#ffffffff",
     "onErrorContainer": "#ff410002",
     "onInverseSurface": "#fffbeeec",
@@ -112,7 +112,7 @@
     "tertiary": "#ff715b2e",
     "tertiaryContainer": "#fffddfa6"
   },
-  "dialogBackgroundColor": "#fffffbff",
+  "dialogBackgroundColor": "#ffffffff",
   "disabledColor": "#61000000",
   "dividerColor": "#1f201a19",
   "focusColor": "#1f000000",

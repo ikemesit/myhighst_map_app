@@ -8,7 +8,7 @@ part 'user.model.g.dart';
 
 @freezed
 class User with _$User {
-  const factory User({
+  factory User({
     @Default('') String firstName,
     @Default('') String lastName,
     @Default('') String fullName,
@@ -23,5 +23,16 @@ class User with _$User {
 
   factory User.fromFirestore(Map<String, dynamic> data) {
     return User.fromJson(data);
+  }
+
+  factory User.update(firstName, lastName, email, uid, photoUrl, createdAt) {
+    return User(
+        firstName: firstName,
+        lastName: lastName,
+        fullName: '$firstName $lastName',
+        email: email,
+        uid: uid,
+        photoUrl: photoUrl,
+        createdAt: createdAt);
   }
 }

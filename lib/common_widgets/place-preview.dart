@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import '../features/place/place.dart';
+import '../features/place/presentation/place.dart';
 
 class PlacePreview extends StatelessWidget {
   const PlacePreview({Key? key, required this.tempTag}) : super(key: key);

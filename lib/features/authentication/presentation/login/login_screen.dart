@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/colors/gf_color.dart';
@@ -9,6 +8,7 @@ import 'package:myhighst_map_app/common_widgets/app_filled_button.dart';
 import 'package:myhighst_map_app/features/authentication/presentation/signup/signup_screen.dart';
 import 'package:myhighst_map_app/global_states.dart';
 
+import '../../../../services/auth/user.service.dart';
 import '../../../profile/profile_page.dart';
 import '../../data/auth.dart';
 import 'login_screen.provider.dart';
@@ -22,6 +22,7 @@ class LoginScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final submitted = ref.watch(loginFormSubmittedProvider);
     final auth = ref.read(authProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     signInWithEmailAndPassword() {
       ref.read(loginFormSubmittedProvider.notifier).state = true;
@@ -43,13 +44,18 @@ class LoginScreen extends ConsumerWidget {
             .then((value) {
           buttonState.toggleState();
 
+          ref
+              .read(userServiceProvider)
+              .getUserById(auth.currentUser?.uid)
+              .then((value) {
+            ref.watch(currentUserProvider.notifier).state = value;
+          });
+
           if (auth.currentUser != null) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ProfilePage(
-                  authUser: auth.currentUser as User,
-                ),
+                builder: (context) => ProfilePage(),
               ),
             );
           }
@@ -76,7 +82,9 @@ class LoginScreen extends ConsumerWidget {
       backgroundColor: Colors.amber,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.amber,
+        foregroundColor: Colors.amber,
+        elevation: 0,
       ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -185,7 +193,7 @@ class LoginScreen extends ConsumerWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const SignUpScreen(),
+                            builder: (context) => SignUpScreen(),
                           ),
                         );
                       },

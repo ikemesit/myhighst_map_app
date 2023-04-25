@@ -174,7 +174,7 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$_User>
 /// @nodoc
 @JsonSerializable()
 class _$_User implements _User {
-  const _$_User(
+  _$_User(
       {this.firstName = '',
       this.lastName = '',
       this.fullName = '',
@@ -252,7 +252,7 @@ class _$_User implements _User {
 }
 
 abstract class _User implements User {
-  const factory _User(
+  factory _User(
       {final String firstName,
       final String lastName,
       final String fullName,

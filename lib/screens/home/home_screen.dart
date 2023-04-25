@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:myhighst_map_app/common_widgets/place-preview.dart';
+import 'package:myhighst_map_app/features/place/presentation/place_list.dart';
 import 'package:myhighst_map_app/screens/home/home_screen.provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -10,6 +11,7 @@ import '../../app_constants.dart';
 import '../../features/authentication/data/auth.dart';
 import '../../features/authentication/presentation/login/login_screen.dart';
 import '../../features/profile/profile_page.dart';
+import '../../global_states.dart';
 
 class HomeScreen extends ConsumerWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -28,7 +30,8 @@ class HomeScreen extends ConsumerWidget {
     final slideUpPanelStatus = ref.watch(slideUpStateProvider);
     final showDestinationSearchPanel =
         ref.watch(showDestinationSearchPanelProvider);
-    final user = ref.watch(authStateNotifierProvider);
+    final user = ref.watch(currentUserProvider);
+    final auth = ref.read(authProvider);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -67,15 +70,6 @@ class HomeScreen extends ConsumerWidget {
                           horizontal: 10,
                         ),
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              elevation: 5,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 25, horizontal: 20),
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
                           onPressed: () => _pc
                               .animatePanelToPosition(
                             1.0,
@@ -88,6 +82,11 @@ class HomeScreen extends ConsumerWidget {
                                     showDestinationSearchPanelProvider.notifier)
                                 .update((state) => !state);
                           }),
+                          style: ElevatedButton.styleFrom(
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           child: const Row(
                             children: [
                               Icon(Icons.location_on),
@@ -150,7 +149,14 @@ class HomeScreen extends ConsumerWidget {
                                 width: 200,
                                 height: 200,
                                 child: InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const PlaceList(),
+                                      ),
+                                    );
+                                  },
                                   child: const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
@@ -203,20 +209,14 @@ class HomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Card(
-                              color: Colors.white,
-                              surfaceTintColor: Colors.white,
-                              elevation: 4.0,
-                              shadowColor: const Color.fromRGBO(0, 0, 0, 0.5),
                               clipBehavior: Clip.hardEdge,
                               child: InkWell(
                                 onTap: () {
-                                  print('from home screen: $user');
-                                  if (user != null) {
+                                  if (auth.currentUser != null) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              ProfilePage(authUser: user)),
+                                          builder: (context) => ProfilePage()),
                                     );
                                   } else {
                                     Navigator.push(
@@ -238,13 +238,13 @@ class HomeScreen extends ConsumerWidget {
                                           children: [
                                             CircleAvatar(
                                               radius: 15,
-                                              backgroundColor: Colors.red,
+                                              backgroundColor: Colors.black,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    color: Colors.grey[200],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            60)),
+                                                  color: Colors.grey[200],
+                                                  borderRadius:
+                                                      BorderRadius.circular(60),
+                                                ),
                                                 width: 30,
                                                 height: 30,
                                                 child: Icon(

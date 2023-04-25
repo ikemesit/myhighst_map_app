@@ -7,13 +7,13 @@ class AppFilledButton extends ConsumerWidget {
 
   final String label;
 
-  final Icon icon;
+  final Icon? icon;
 
   const AppFilledButton({
     Key? key,
     required this.label,
     required this.submitEventCallback,
-    required this.icon,
+    this.icon,
   }) : super(key: key);
 
   void _onSubmit() {
@@ -25,11 +25,6 @@ class AppFilledButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(appFilledButtonLoadingStateProvider);
     return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 10,
-        padding: const EdgeInsets.symmetric(vertical: 25.0, horizontal: 5.0),
-      ),
       onPressed: _onSubmit,
       label: Text(
         label,
@@ -49,7 +44,7 @@ class AppFilledButton extends ConsumerWidget {
                 strokeWidth: 3,
               ),
             )
-          : icon,
+          : icon ?? const SizedBox.shrink(),
     );
   }
 }

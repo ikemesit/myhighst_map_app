@@ -1,50 +1,95 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:getwidget/components/avatar/gf_avatar.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myhighst_map_app/common_widgets/app_text_form_field.dart';
 import 'package:myhighst_map_app/services/auth/user.service.dart';
 import 'package:path/path.dart';
 
+import '../../global_states.dart';
 import '../../models/user.model.dart' as model;
 
 class ProfileEdit extends ConsumerStatefulWidget {
-  const ProfileEdit({Key? key}) : super(key: key);
+  const ProfileEdit({Key? key, required this.user}) : super(key: key);
+
+  final model.User user;
 
   @override
   ConsumerState<ProfileEdit> createState() => _ProfileEditState();
 }
 
 class _ProfileEditState extends ConsumerState<ProfileEdit> {
+  String? _photoUrl;
+  File? _photo;
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+
+  @override
+  void initState() {
+    _firstNameController.text = widget.user.firstName;
+    _lastNameController.text = widget.user.lastName;
+    _photoUrl = widget.user.photoUrl;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final User? currentUser = ref.watch(firebaseUserProvider);
     final Future<model.User?> snapshot =
         ref.watch(userServiceProvider).getUserById(currentUser?.uid);
-    // final photo = ref.watch(pickedImageProvider);
     final ImagePicker picker = ImagePicker();
-    String? photoUrl;
-    File? photo;
+
+    closeDialog(BuildContext context) {
+      Navigator.of(context).pop();
+    }
 
     Future uploadFile() async {
-      if (photo == null) return;
-      final fileName = basename(photo!.path);
+      if (_photo == null) return;
+      final fileName = basename(_photo!.path);
       const destination = 'profilePics/';
 
       try {
-        final ref = FirebaseStorage.instance.ref(destination).child(fileName);
-        final uploadTask = await ref.putFile(photo!);
+        CoolAlert.show(
+          context: context,
+          type: CoolAlertType.loading,
+        );
+
+        final firebaseRef =
+            FirebaseStorage.instance.ref(destination).child(fileName);
+        final uploadTask = await firebaseRef.putFile(_photo!);
         final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-        await FirebaseFirestore.instance
-            .doc('users/${currentUser?.uid}')
-            .update({
+        setState(() {
+          _photoUrl = downloadUrl;
+        });
+
+        FirebaseFirestore.instance.doc('users/${widget.user.uid}').update({
           'photoUrl': downloadUrl,
+        }).then((value) {
+          snapshot.then((value) =>
+              ref.read(currentUserProvider.notifier).state = model.User.update(
+                  value?.firstName,
+                  value?.lastName,
+                  value?.email,
+                  value?.uid,
+                  downloadUrl,
+                  value?.createdAt));
+
+          CoolAlert.show(
+            context: context,
+            type: CoolAlertType.success,
+            text: "Profile picture changed!",
+            backgroundColor: Colors.white,
+          ).then(
+            (value) => closeDialog(context),
+          );
         });
       } catch (e) {
         print('error occured');
@@ -56,8 +101,7 @@ class _ProfileEditState extends ConsumerState<ProfileEdit> {
 
       setState(() {
         if (pickedFile != null) {
-          photo = File(pickedFile.path);
-          print(photo!.path);
+          _photo = File(pickedFile.path);
           uploadFile();
         } else {
           print('No image selected.');
@@ -70,8 +114,7 @@ class _ProfileEditState extends ConsumerState<ProfileEdit> {
 
       setState(() {
         if (pickedFile != null) {
-          photo = File(pickedFile.path);
-          print(photo!.path);
+          _photo = File(pickedFile.path);
           uploadFile();
         } else {
           print('No image selected.');
@@ -181,92 +224,125 @@ class _ProfileEditState extends ConsumerState<ProfileEdit> {
           });
     }
 
-    return FutureBuilder(
-        future: snapshot,
-        builder: (context, snapshot) {
-          if (snapshot.hasData == true) {
-            return Scaffold(
-              backgroundColor: Colors.blueGrey[50],
-              appBar: AppBar(
-                title: const Text('Profile Edit'),
-              ),
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 40, horizontal: 8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                        child: CircleAvatar(
-                            radius: 55,
-                            backgroundColor: Colors.grey,
-                            child: photo != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(50),
-                                    child: Image.file(
-                                      photo!,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  )
-                                : ClipRRect(
-                                    borderRadius: BorderRadius.circular(50),
-                                    child: Image.network(
-                                      snapshot.data!.photoUrl as String,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  )),
-                      ),
-                      const Gap(10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          showPicker(context);
-                        },
-                        child: const Text(
-                          'Change Profile Photo',
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      const Gap(30),
-                      const AppTextFormField(hintText: 'First Name'),
-                      const Gap(10),
-                      const AppTextFormField(hintText: 'Middle Name'),
-                      const Gap(10),
-                      const AppTextFormField(hintText: 'Last Name'),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          } else if (snapshot.hasError == true) {
-            return const Placeholder();
-          } else {
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('Profile Edit'),
-              ),
-              body: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ),
-            );
-          }
+    saveProfileEdit() {
+      final firstName = _firstNameController.text;
+      final lastName = _lastNameController.text;
+
+      if (firstName.isEmpty || lastName.isEmpty) {
+        CoolAlert.show(
+          context: context,
+          type: CoolAlertType.error,
+          text: "Please fill in all fields!",
+          backgroundColor: Colors.white,
+        );
+      } else {
+        CoolAlert.show(
+          context: context,
+          type: CoolAlertType.loading,
+        );
+
+        FirebaseFirestore.instance.doc('users/${widget.user.uid}').update({
+          'firstName': firstName,
+          'lastName': lastName,
+        }).then((value) {
+          snapshot.then((value) =>
+              ref.read(currentUserProvider.notifier).state = model.User.update(
+                  firstName,
+                  lastName,
+                  value?.email,
+                  value?.uid,
+                  value?.photoUrl,
+                  value?.createdAt));
+
+          CoolAlert.show(
+            context: context,
+            type: CoolAlertType.success,
+            text: "Profile updated!",
+            backgroundColor: Colors.white,
+          ).then(
+            (value) => closeDialog(context),
+          );
         });
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Profile Edit',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        automaticallyImplyLeading: true,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _photoUrl != null
+                  ? GFAvatar(
+                      radius: 60,
+                      backgroundImage: NetworkImage(_photoUrl as String),
+                    )
+                  : GFAvatar(
+                      backgroundImage:
+                          NetworkImage(widget.user.photoUrl as String),
+                      radius: 60,
+                    ),
+              const Gap(10),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                    foregroundColor: Colors.white,
+                    textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 2,
+                    ),
+                  ),
+                  onPressed: () {
+                    showPicker(context);
+                  },
+                  child: const Text(
+                    "Change Profile Photo",
+                  )),
+              const Gap(30),
+              AppTextFormField(
+                hintText: 'First Name',
+                controller: _firstNameController,
+              ),
+              const Gap(10),
+              AppTextFormField(
+                hintText: 'Last Name',
+                controller: _lastNameController,
+              ),
+              const Gap(40),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                  minimumSize: const Size.fromHeight(60),
+                ),
+                onPressed: saveProfileEdit,
+                child: const Text(
+                  'Save',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
