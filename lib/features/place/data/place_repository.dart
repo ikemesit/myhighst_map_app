@@ -13,7 +13,7 @@ class PlaceRepository {
 
   PlaceRepository({required this.fs});
 
-  Future<List<Place>> getPlaces() async {
+  Future<List<Place>> getPlaces(int? count) async {
     final Query query = fs.collection('places');
     final snapshots = query.get();
     List<Place> results = [];
@@ -23,6 +23,10 @@ class PlaceRepository {
         results.add(Place.fromFirestore(doc));
       }
     });
+
+    if (count != null) {
+      results = results.sublist(0, count);
+    }
 
     return results;
   }

@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:json_theme/json_theme.dart';
 import 'package:myhighst_map_app/features/authentication/data/auth.dart';
 import 'package:myhighst_map_app/global_states.dart';
 import 'package:myhighst_map_app/screens/home/home_screen.dart';
@@ -17,10 +13,6 @@ import 'models/user.model.dart' as model;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
