@@ -3,7 +3,30 @@ import 'package:gap/gap.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Place extends StatelessWidget {
-  Place({Key? key}) : super(key: key);
+  final String phoneNo;
+  final String title;
+  final String address;
+  final String city;
+  final String state;
+  final String website;
+  final String description;
+  final List<String> images;
+  final double latitude;
+  final double longitude;
+
+  Place({
+    Key? key,
+    required this.phoneNo,
+    required this.title,
+    required this.address,
+    required this.city,
+    required this.state,
+    required this.website,
+    required this.description,
+    required this.images,
+    required this.latitude,
+    required this.longitude,
+  }) : super(key: key);
 
   final Uri _url = Uri.parse('https://www.google.com/maps/dir/KLIA+(KUL),'
       '+Kuala+Lumpur+International+Airport,+Sepang,+Selangor,'
@@ -18,55 +41,58 @@ class Place extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Some place'),
+        title: Text(title),
       ),
       body: ListView(
         children: [
-          Hero(
-            tag: 'test',
-            child: Image.network(
-              'https://aceglassva.com/wp-content/uploads/2014/11/Charming-storefront.jpg',
-              fit: BoxFit.fitWidth,
+          SizedBox(
+            height: 250,
+            child: Hero(
+              tag: title,
+              child: Image.network(
+                images[0],
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      'Restoran Amira',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                          overflow: TextOverflow.fade,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                // const Gap(2),
-                // const Row(
-                //   children: [
-                //     Chip(
-                //       backgroundColor: Colors.white,
-                //       side: BorderSide(color: Colors.red),
-                //       shape: RoundedRectangleBorder(
-                //         side: BorderSide(color: Colors.red),
-                //         borderRadius: BorderRadius.all(
-                //           Radius.circular(60),
-                //         ),
-                //       ),
-                //       label: Text(
-                //         'Entertainment',
-                //         style: TextStyle(
-                //           color: Colors.red,
-                //           fontSize: 10,
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // ),
+                const Gap(20),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on),
+                    const Gap(5),
+                    Expanded(
+                      child: Text(
+                        address,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.0,
+                          overflow: TextOverflow.fade,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const Gap(20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -77,11 +103,14 @@ class Place extends StatelessWidget {
                         foregroundColor: Colors.white,
                         elevation: 5,
                         padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 20),
+                          vertical: 0,
+                          horizontal: 15,
+                        ),
                         textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
                       ),
                       onPressed: _launchUrl,
                       child: const Row(
@@ -95,29 +124,6 @@ class Place extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Gap(5),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white70,
-                        foregroundColor: Colors.black87,
-                        elevation: 5,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 20),
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                      onPressed: () {},
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.map,
-                            size: 10,
-                          ),
-                          Gap(3),
-                          Text('Download Map'),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
                 const Gap(20),
@@ -125,26 +131,7 @@ class Place extends StatelessWidget {
                   color: Color.fromRGBO(0, 0, 0, 0.08),
                 ),
                 const Gap(20),
-                ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return const ListTile(
-                      leading: Icon(Icons.location_on),
-                      title: Text(
-                        'No. 8, 9 & 10, Jalan PPI 2, Pusat Perniagaan Ixora',
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return const Divider(
-                      color: Color.fromRGBO(0, 0, 0, 0.08),
-                    );
-                  },
-                  itemCount: 4,
-                )
+                Text(description),
               ],
             ),
           )

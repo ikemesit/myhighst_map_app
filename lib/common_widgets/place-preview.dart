@@ -4,9 +4,30 @@ import 'package:gap/gap.dart';
 import '../features/place/presentation/place.dart';
 
 class PlacePreview extends StatelessWidget {
-  const PlacePreview({Key? key, required this.tempTag}) : super(key: key);
+  final String phoneNo;
+  final String title;
+  final String address;
+  final String city;
+  final String state;
+  final String website;
+  final String description;
+  final List<String> images;
+  final double latitude;
+  final double longitude;
 
-  final String tempTag;
+  const PlacePreview({
+    Key? key,
+    required this.phoneNo,
+    required this.title,
+    required this.address,
+    required this.city,
+    required this.state,
+    required this.website,
+    required this.description,
+    required this.images,
+    required this.latitude,
+    required this.longitude,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +45,18 @@ class PlacePreview extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Place(),
+                builder: (context) => Place(
+                  title: title,
+                  address: address,
+                  city: city,
+                  state: state,
+                  website: website,
+                  description: description,
+                  images: images,
+                  latitude: latitude,
+                  longitude: longitude,
+                  phoneNo: phoneNo,
+                ),
               ),
             );
           },
@@ -32,11 +64,15 @@ class PlacePreview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Hero(
-                tag: tempTag,
-                child: Image.network(
-                  'https://aceglassva.com/wp-content/uploads/2014/11/Charming-storefront.jpg',
-                  fit: BoxFit.fitWidth,
+              SizedBox(
+                width: double.infinity,
+                height: 150,
+                child: Hero(
+                  tag: title,
+                  child: Image.network(
+                    images[0],
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const Gap(2),
@@ -46,7 +82,7 @@ class PlacePreview extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'XYZ Barber shop',
+                      title,
                       style: Theme.of(context).textTheme.titleSmall,
                       overflow: TextOverflow.ellipsis,
                     ),
